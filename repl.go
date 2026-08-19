@@ -10,12 +10,12 @@ import (
 type cliCommand struct {
 	name        string
 	description string
-	callback    func() error
+	callback    func(*config) error
 }
 
-func startRepl() {
+func startRepl(config *config) {
 	reader := bufio.NewScanner(os.Stdin)
-	commands := getCommands()
+	commands := config.commandRegistry
 
 	for {
 		fmt.Printf("Pokedex > ")
@@ -38,7 +38,10 @@ func startRepl() {
 			continue
 		}
 
-		use.callback()
+		err := use.callback(config)
+		if err != nil {
+			fmt.Println("err: ", err)
+		}
 	}
 
 }
@@ -60,16 +63,16 @@ func getCommands() map[string]cliCommand {
 	return commands
 }
 
-func commandHelp() error {
+func commandHelp(config *config) error {
 	fmt.Printf("Welcome to the Pokedex!\n")
 	fmt.Printf("Usage:\n\n")
-	for key, value := range getCommands() {
-		fmt.Printf("%s: %s\n", key, value.description)
+	for _, value := range config.commandRegistry {
+		fmt.Printf("%s: %s\n", value.name, value.description)
 	}
 	return nil
 }
 
-func commandExit() error {
+func commandExit(config *config) error {
 	fmt.Println("Closing the Pokedex... Goodbye!")
 	os.Exit(0)
 	return nil

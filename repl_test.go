@@ -2,6 +2,18 @@ package main
 
 import "testing"
 
+// func TestCommandHelp(t *testing.T) {
+// 	cases := []struct {
+// 		input    string
+// 		expected []string
+// 	}{}
+//
+// 	for _, c := range cases {
+// 		actual := commandExit(&config{})
+//
+// 	}
+// }
+
 func TestCleanInput(t *testing.T) {
 	cases := []struct {
 		input    string

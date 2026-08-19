@@ -1,19 +1,11 @@
 package main
 
 func main() {
+	url := "https://pokeapi.co/api/v2/location-area"
 	config := &config{
-		commandRegistry: map[string]cliCommand{
-			"help": {
-				name:        "help",
-				description: "Displays a help message",
-				callback:    commandHelp,
-			},
-			"exit": {
-				name:        "exit",
-				description: "Exit the pokedex",
-				callback:    commandExit,
-			},
-		},
+		commandRegistry: getCommands(),
+		next:            &url,
+		previous:        nil,
 	}
 	startRepl(config)
 }

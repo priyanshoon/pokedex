@@ -4,8 +4,6 @@ import (
 	"errors"
 	"fmt"
 	"os"
-
-	"github.com/priyanshoon/pokedex/internal/pokeapi"
 )
 
 type cliCommand struct {
@@ -14,41 +12,36 @@ type cliCommand struct {
 	callback    func(*config) error
 }
 
-func commandMapb(cfg *config) error {
-	if cfg.previous == nil {
-		return errors.New("it's over for you bro, there is no previoui page")
-	}
-
-	url := cfg.previous
-
-	locations, err := pokeapi.GetLocationAreas(*url)
+func commandMap(cfg *config) error {
+	locationResp, err := cfg.pokeapiClient.ListLocations(cfg.nextLocationsURL)
 	if err != nil {
 		return err
 	}
 
-	cfg.previous = locations.Previous
-	cfg.next = locations.Next
+	cfg.nextLocationsURL = locationResp.Next
+	cfg.previousLocationsURL = locationResp.Previous
 
-	for _, location := range locations.Results {
-		fmt.Println(location.Name)
+	for _, loc := range locationResp.Results {
+		fmt.Println(loc.Name)
 	}
 
 	return nil
 }
 
-func commandMap(cfg *config) error {
-	url := cfg.next
-
-	locations, err := pokeapi.GetLocationAreas(*url)
+func commandMapb(cfg *config) error {
+	if cfg.previousLocationsURL == nil {
+		return errors.New("you're on the first page")
+	}
+	locationResp, err := cfg.pokeapiClient.ListLocations(cfg.previousLocationsURL)
 	if err != nil {
 		return err
 	}
 
-	cfg.previous = locations.Previous
-	cfg.next = locations.Next
+	cfg.nextLocationsURL = locationResp.Next
+	cfg.previousLocationsURL = locationResp.Previous
 
-	for _, location := range locations.Results {
-		fmt.Println(location.Name)
+	for _, loc := range locationResp.Results {
+		fmt.Println(loc.Name)
 	}
 
 	return nil

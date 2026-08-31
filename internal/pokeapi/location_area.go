@@ -2,6 +2,7 @@ package pokeapi
 
 import (
 	"encoding/json"
+	"errors"
 	"io"
 	"net/http"
 )
@@ -29,6 +30,10 @@ func (c *Client) ListPokemons(locationName string) (LocationArea, error) {
 	}
 
 	defer resp.Body.Close()
+
+	if resp.StatusCode != http.StatusOK {
+		return LocationArea{}, errors.New("location does not exist.")
+	}
 
 	dat, err := io.ReadAll(resp.Body)
 	if err != nil {

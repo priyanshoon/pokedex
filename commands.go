@@ -12,6 +12,16 @@ type cliCommand struct {
 	callback    func(*config, ...string) error
 }
 
+func commandCatch(cfg *config, args ...string) error {
+	if len(args) != 1 {
+		return errors.New("you must provide a pokemon name.")
+	}
+
+	name := args[0]
+	fmt.Printf("Throwing a Pokeball at %s...", name)
+	return nil
+}
+
 func commandExplore(cfg *config, args ...string) error {
 	if len(args) != 1 {
 		return errors.New("you must provide a location name.")
@@ -20,7 +30,7 @@ func commandExplore(cfg *config, args ...string) error {
 	name := args[0]
 	location, err := cfg.pokeapiClient.ListPokemons(name)
 	if err != nil {
-		return nil
+		return err
 	}
 
 	fmt.Printf("Exploring %s...\n", location.Name)
@@ -29,10 +39,8 @@ func commandExplore(cfg *config, args ...string) error {
 		fmt.Printf(" - %s\n", enc.Pokemon.Name)
 	}
 
-
 	return nil
 }
-
 
 func commandMap(cfg *config, args ...string) error {
 	locationResp, err := cfg.pokeapiClient.ListLocations(cfg.nextLocationsURL)
@@ -110,6 +118,11 @@ func getCommands() map[string]cliCommand {
 			name:        "explore",
 			description: "List all the pokemon located there.",
 			callback:    commandExplore,
+		},
+		"catch": {
+			name:        "catch",
+			description: "catches pokemon",
+			callback:    commandCatch,
 		},
 	}
 

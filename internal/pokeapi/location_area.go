@@ -6,43 +6,43 @@ import (
 	"net/http"
 )
 
-func (c *Client) ListPokemons(locationName string) (PokemonEncounters, error) {
+func (c *Client) ListPokemons(locationName string) (LocationArea, error) {
 	url := baseURL + "/location-area/" + locationName
 	if val, ok := c.cache.Get(url); ok {
-		pokemonEncounters := PokemonEncounters{}
-		err := json.Unmarshal(val, &pokemonEncounters)
+		locationArea := LocationArea{}
+		err := json.Unmarshal(val, &locationArea)
 		if err != nil {
-			return PokemonEncounters{}, err
+			return LocationArea{}, err
 		}
 
-		return pokemonEncounters, nil
+		return locationArea, nil
 	}
 
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		return PokemonEncounters{}, err
+		return LocationArea{}, err
 	}
 
 	resp, err := c.httpClient.Do(req)
 	if err != nil {
-		return PokemonEncounters{}, err
+		return LocationArea{}, err
 	}
 
 	defer resp.Body.Close()
 
 	dat, err := io.ReadAll(resp.Body)
 	if err != nil {
-		return PokemonEncounters{}, err
+		return LocationArea{}, err
 	}
 
-	pokemonEncounters := PokemonEncounters{}
-	err = json.Unmarshal(dat, &pokemonEncounters)
+	locationArea := LocationArea{}
+	err = json.Unmarshal(dat, &locationArea)
 	if err != nil {
-		return PokemonEncounters{}, err
+		return LocationArea{}, err
 	}
 
 	c.cache.Add(url, dat)
-	return pokemonEncounters, nil
+	return locationArea, nil
 }
 
 func (c *Client) ListLocations(pageURL *string) (LocationAreas, error) {

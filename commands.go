@@ -62,6 +62,10 @@ func commandExit(cfg *config) error {
 	return nil
 }
 
+func commandExplore(cfg *config) error {
+	return nil
+}
+
 func getCommands() map[string]cliCommand {
 	commands := map[string]cliCommand{
 		"help": {
@@ -83,6 +87,11 @@ func getCommands() map[string]cliCommand {
 			name:        "map",
 			description: "Gives locations areas in the pokemon worlds.",
 			callback:    commandMapb,
+		},
+		"explore": {
+			name:        "explore",
+			description: "List all the pokemon located there.",
+			callback:    commandExplore,
 		},
 	}
 

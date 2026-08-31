@@ -32,7 +32,12 @@ func startRepl(config *config) {
 			continue
 		}
 
-		err := use.callback(config)
+		args := []string{}
+		if len(words) > 1 {
+			args = words[1:]
+		}
+
+		err := use.callback(config, args...)
 		if err != nil {
 			fmt.Println("err: ", err)
 		}

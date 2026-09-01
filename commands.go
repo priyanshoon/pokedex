@@ -15,6 +15,45 @@ type cliCommand struct {
 
 const threshold = 40
 
+func commandPokedex(cfg *config, args ...string) error {
+	if len(cfg.pokemons) == 0 {
+		return errors.New("You don't have any pokemons yet.")
+	}
+
+	fmt.Println("Your Pokedex: ")
+	for pokemon := range cfg.pokemons {
+		fmt.Printf(" - %s\n", pokemon)
+	}
+	return nil
+}
+
+func commandInspect(cfg *config, args ...string) error {
+	if len(args) != 1 {
+		return errors.New("you must provide a pokemon name.")
+	}
+
+	name := args[0]
+	pokemon, ok := cfg.pokemons[name]
+	if !ok {
+		fmt.Println("you have not caught that pokemon")
+		return nil
+	}
+
+	fmt.Printf("Name: %s\n", pokemon.Name)
+	fmt.Printf("Height: %d\n", pokemon.Height)
+	fmt.Printf("Weight: %d\n", pokemon.Weight)
+	fmt.Println("Stats:")
+	for _, data := range pokemon.Stats {
+		fmt.Printf(" -%s: %d\n", data.Stat.Name, data.BaseStat)
+	}
+	fmt.Println("Types:")
+	for _, data := range pokemon.Types {
+		fmt.Printf(" - %s\n", data.Type.Name)
+	}
+
+	return nil
+}
+
 func commandCatch(cfg *config, args ...string) error {
 	if len(args) != 1 {
 		return errors.New("you must provide a pokemon name.")
@@ -141,6 +180,16 @@ func getCommands() map[string]cliCommand {
 			name:        "catch",
 			description: "catches pokemon",
 			callback:    commandCatch,
+		},
+		"inspect": {
+			name:        "inspect",
+			description: "provides information about pokemons",
+			callback:    commandInspect,
+		},
+		"pokedex": {
+			name:        "pokedex",
+			description: "list pokemons caught so far",
+			callback:    commandPokedex,
 		},
 	}
 

@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"fmt"
+	"math/rand"
 	"os"
 )
 
@@ -12,13 +13,30 @@ type cliCommand struct {
 	callback    func(*config, ...string) error
 }
 
+const threshold = 40
+
 func commandCatch(cfg *config, args ...string) error {
 	if len(args) != 1 {
 		return errors.New("you must provide a pokemon name.")
 	}
 
 	name := args[0]
-	fmt.Printf("Throwing a Pokeball at %s...", name)
+	fmt.Printf("Throwing a Pokeball at %s...\n", name)
+
+	pokemon, err := cfg.pokeapiClient.GetPokemon(name)
+	if err != nil {
+		return err
+	}
+
+	res := rand.Intn(pokemon.BaseExperience)
+
+	if res > threshold {
+		fmt.Printf("%s escaped!\n", name)
+		return nil
+	}
+
+	cfg.pokemons[name] = pokemon
+	fmt.Printf("%s was caught!\n", name)
 	return nil
 }
 
